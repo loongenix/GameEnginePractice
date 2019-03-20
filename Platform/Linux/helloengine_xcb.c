@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <xcn/xcb.h>
+#include <xcb/xcb.h>
 
-int mian() {
+int main(int argc, char const *argv[])
+{
   xcb_connection_t *pConn;
   xcb_screen_t *pScreen;
   xcb_window_t window;
@@ -74,6 +75,11 @@ int mian() {
   while ((pEvent = xcb_wait_for_event(pConn)) && !isQuit) {
     switch (pEvent->response_type & ~0x80) {
       case XCB_EXPOSE:
+      {
+        xcb_rectangle_t rect={20,20,60,80};
+        xcb_poly_fill_rectangle(pConn, window, foreground, 1, &rect);
+        xcb_flush(pConn);
+      }
         break;
       case XCB_KEY_PRESS:
         isQuit = 1;
@@ -81,6 +87,6 @@ int mian() {
     }
     free(pEvent);
   }
-
+  xcb_disconnect(pConn);
   return 0;
 }
